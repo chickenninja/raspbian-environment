@@ -1,0 +1,41 @@
+---
+- name: install rpi environment
+  hosts: 127.0.0.1
+# update the system to the latest stable
+  tasks:
+  - shell: sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get autoclean -y  && sudo apt-get autoremove -y
+# install my favourite tools
+  - shell: curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
+  - shell: sudo apt-get install -y neovim git tmux ranger python-pip nodejs lynx docker ansible zsh
+  - shell: echo "setxkbmap gb && LANG=\"en_GB.UTF-8\" && exec i3" > /home/sean/.xinitrc
+    args:
+      creates: /home/sean/.xinitrc
+    #- shell: npm set config prefix /usr/local
+    #- shell: npm install -g eslint remark-cli remark-html remark-present-lint-markdown-style-guide js-beautify
+
+# set up X
+  - shell: sudo apt-get install -y xinit x11-xserver-utils i3 dmenu xfce4-terminal firefox-esr 
+
+# set up music production
+  - shell: sudo apt-get install -y sonic-pi
+
+# set up games
+  - shell: sudo apt-get install -y nethack-console
+
+# set up password manager
+# set up aliases
+# set up my repos
+# set up dotfiles
+  - shell: cd ~ && git clone https://github.com/chickenninja/dotfiles.git && sudo chmod +x ~/dotfiles/link.sh 
+  - shell: ~/dotfiles/link.sh
+    args:
+      creates: ~/.zshrc
+    
+  - shell: mkdir -p ~/.local/share/nvim/site/pack/git-plugins/start && cd ~/.local/share/nvim/site/pack/git-plugins/start && git clone https://github.com/w0rp/ale.git && git clone https://github.com/sbdchd/neoformat.git
+    args:
+      creates: ~/.local/share/nvim/site/pack/git-plugins
+
+  - name: install oh my zsh
+    shell: curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
+    args:
+      creates: /home/sean/.oh-my-zsh
